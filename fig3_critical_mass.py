@@ -84,6 +84,7 @@ ax2.plot(W_END, 0.0, "o", ms=4.2, mfc="white", mec=CURVE, mew=1.1, zorder=5,
 ax2.text(0.195, FLAT + 0.004, r"$1/(3\sqrt{3})$", ha="right", va="bottom",
          color=GREY, fontsize=8)
 
+
 # Omega_k labels: the boundary of non-negative density and three closed universes.
 ax2.plot(W_RHO, McH(W_RHO), "o", ms=2.8, color=CURVE, zorder=4)
 ax2.annotate(r"$\Omega_k=1$", xy=(W_RHO, McH(W_RHO)), xytext=(4, 5),

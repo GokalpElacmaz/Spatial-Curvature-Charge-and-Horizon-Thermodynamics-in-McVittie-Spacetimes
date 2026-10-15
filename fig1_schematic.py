@@ -129,7 +129,7 @@ for j, k in enumerate(KS):
 p = POS[-0.001]
 for key, lab, dx in (("s", r"$R_{\rm s}$", 9),
                      ("B", r"$R_{\rm B}$", 0),
-                     ("ch", r"$R_{\rm CH}$", 0)):
+                     ("ch", r"$R_{\rm cos}$", 0)):
     ax0.annotate(lab, (p[key], 2), xytext=(dx, 13), ha="center",
                  textcoords="offset points", fontsize=FS_NOTE, color=BLACK,
                  arrowprops=dict(arrowstyle="-", lw=0.6, color=LIGHT_GREY,
@@ -208,11 +208,11 @@ key = [Line2D([], [], ls="", marker="|", ms=MS_LAPSE, mew=1.5, color=GREY,
        Line2D([], [], ls="", marker="D", ms=MS_MINUS, color=GREY,
               label=r"marginal sphere, $Y=-HR$"),
        Line2D([], [], ls="", marker="s", ms=MS_SCREEN, mfc="white", mec=GREY,
-              label="screen"),
+              label="cavity wall"),
        Patch(facecolor=GREY, alpha=0.16, edgecolor="none",
              label=r"untrapped, $\chi>0$"),
        Patch(facecolor="white", edgecolor=LIGHT_GREY, lw=0.6,
-             label=r"anti-trapped, $\chi<0$"),
+             label=r"antitrapped, $\chi<0$"),
        Patch(facecolor="white", edgecolor=GREY, hatch="/////", lw=0.6,
              label=r"outside the region $N>0$")]
 fig.legend(handles=key, loc="lower center", bbox_to_anchor=(0.5, -0.075),

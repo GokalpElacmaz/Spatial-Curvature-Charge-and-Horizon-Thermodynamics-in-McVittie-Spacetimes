@@ -128,7 +128,7 @@ ax2.plot(X_STAR, 1.0, "o", ms=4.2, mfc="white", mec=BLACK, mew=1.0, zorder=5,
          clip_on=False)
 ax2.set_xlim(-0.40, 0.30)
 ax2.set_ylim(0.0, 4.3)
-ax2.set_xlabel(r"$k r^{2}$")
+ax2.set_xlabel(r"$k r_A^{2}$")
 ax2.set_ylabel(r"$\mu$")
 ax2.set_yticks([0, 1, 2, 3, 4])
 ax2.set_xticks([-0.4, -0.2, 0.0, 0.2])

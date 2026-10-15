@@ -60,7 +60,7 @@ ax1.set_xlabel(r"$y=(1-\Phi_{\rm B}^{2})R_A/R_{\rm B}$")
 ax1.set_ylabel(r"$T_{\rm B}R_{\rm B}$")
 ax1.legend(loc="upper center", handlelength=1.6, labelspacing=0.28, borderpad=0.2,
            fontsize=7.5)
-panel_label(ax1, "(a)", x=0.24)
+panel_label(ax1, "(a)", x=0.80)
 
 # ------------------------------------------------------------------ panel (b)
 ax2.axhline(0.0, color=GREY, lw=0.6, ls=":")
@@ -105,7 +105,7 @@ ax3.set_xticks([0.0, 0.1, 0.2, 1.0 / 3.0])
 ax3.set_xticklabels(["0", "0.1", "0.2", "1/3"])
 ax3.set_xlabel(r"$\Phi_{\rm B}$")
 ax3.set_ylabel(r"$\tau_H$")
-panel_label(ax3, "(c)", y=0.80, x=0.05)
+panel_label(ax3, "(c)", x=0.05)
 
 for ax in (ax1, ax2, ax3):
     ax.minorticks_on()

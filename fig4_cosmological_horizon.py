@@ -125,7 +125,7 @@ for qom, color in ((0.0, BLUE), (1.0, ORANGE)):
 ax2.set_xlim(-0.05, 0.45)
 ax2.set_ylim(-2.1, 1.4)
 ax2.set_xlabel(r"$k r_{\rm H}^{2}$")
-ax2.set_ylabel(r"$(R_{\rm CH}-R_{\rm H})/M$")
+ax2.set_ylabel(r"$(R_{\rm cos}-R_{\rm H})/M$")
 key = [Line2D([], [], color="0.55", lw=1.1, label=r"$M/R_{\rm H}\to0$"),
        Line2D([], [], color=BLUE, label=r"$Q=0$"),
        Line2D([], [], color=ORANGE, label=r"$Q=M$"),
@@ -160,7 +160,7 @@ ax3.set_yscale("log")
 ax3.set_xlim(0.01, 0.30)
 ax3.set_ylim(1e-8, 3e-2)
 ax3.set_xlabel(r"$M/R_{\rm H}$")
-ax3.set_ylabel(r"$|R_{\rm CH}^{(2)}-R_{\rm CH}|/R_{\rm H}$")
+ax3.set_ylabel(r"$|R_{\rm cos}^{(2)}-R_{\rm cos}|/R_{\rm H}$")
 ax3.legend(loc="lower right", handlelength=1.6, borderpad=0.2, labelspacing=0.25,
            fontsize=7.5)
 panel_label(ax3, "(c)")
