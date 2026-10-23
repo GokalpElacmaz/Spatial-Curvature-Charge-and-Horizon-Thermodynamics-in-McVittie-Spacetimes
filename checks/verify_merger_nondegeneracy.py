@@ -3,7 +3,11 @@
 Units a = 1, r_A = 1, k = kr_A^2. Along the curve of double zeros we evaluate d_r^2 (Y-HR) and d_M (Y-HR) at the
 double zero. The double zero is a merger (two simple zeros disappear as M grows) where d_r^2 (Y-HR) < 0. The script
 locates the sign change, compares it with the maximum of M_c H and the stationary point of Omega_k, and counts the
-zeros of Y-HR in the region N>0 just below and just above M_c on both sides of it."""
+zeros of Y-HR in the region N>0 just below and just above M_c on both sides of it.
+
+The last part derives the closed forms of Sect. 2.3 with sympy, in the variable u = (1 + kr_A^2)(1 + mu_-):
+r_A^2 d_r^2 (Y-HR) = (5u^2 - 24u + 18)/(6u), Eq. (second-derivative), the same factor in dOmega_k/du and d(M_c H)/du,
+and the proportionality of d_t chi at the double zero to the numerator of Eq. (dRdt)."""
 import mpmath as mp
 import numpy as np
 
@@ -70,3 +74,49 @@ def count_zeros(w, factor):
 
 for w in ['0.1', '-0.5']:
     print(f'kr_A^2={w}: zeros for M = 0.98 M_c: {count_zeros(mp.mpf(w), "0.98")}, for M = 1.02 M_c: {count_zeros(mp.mpf(w), "1.02")}')
+
+
+# closed forms in u (Sect. 2.3) ------------------------------------------------------------------------------------
+import sympy as sp
+
+u, r = sp.symbols('u r', positive=True)
+w_u = -(u**2 - 6 * u + 6) / (u**2 + 6)
+mu_u = u**2 / 6
+YA_u = (1 - w_u - (1 + w_u) * mu_u) / ((1 + w_u) * (1 + mu_u))
+H_u = YA_u * (1 + w_u) / (1 + mu_u)**2
+M_u = 2 * mu_u / sp.sqrt(1 + w_u)
+mu_r = M_u * sp.sqrt(1 + w_u * r**2) / (2 * r)
+F = ((1 - mu_r) / (1 + mu_r) - w_u * r**2) / (1 + w_u * r**2) - H_u * r * (1 + mu_r)**2 / (1 + w_u * r**2)
+assert sp.simplify(F.subs(r, 1)) == 0 and sp.simplify(sp.diff(F, r).subs(r, 1)) == 0
+F2 = sp.factor(sp.simplify(sp.diff(F, r, 2).subs(r, 1)))
+print('r_A^2 d_r^2(Y-HR) =', F2)
+McH_u = sp.factor(sp.simplify((1 + w_u)**sp.Rational(5, 2) / 3 * YA_u))
+Om_u = sp.factor(sp.simplify(-4 * w_u * (1 + mu_u)**4 / ((1 + w_u)**2 * YA_u**2)))
+print('M_c H =', McH_u, '  d/du =', sp.factor(sp.diff(McH_u, u)))
+print('Omega_k =', Om_u, '  d/du =', sp.factor(sp.diff(Om_u, u)))
+u_star = (12 - 3 * sp.sqrt(6)) / 5
+print('turning point: kr_A^2 =', sp.nsimplify(sp.simplify(w_u.subs(u, u_star))), '=', sp.N(w_u.subs(u, u_star), 12),
+      ' M_c H =', sp.N(McH_u.subs(u, u_star), 12), ' Omega_k =', sp.N(Om_u.subs(u, u_star), 12))
+
+# d_t chi at the double zero versus the numerator of Eq. (dRdt), for a(t) = exp(H0 t + Hd t^2/2)
+
+
+def dt_chi_and_numerator(w, Hd):
+    M, H0, _, muA = background(w)
+    RA = (1 + muA)**2 / (1 + w)
+
+    def chi(t, rr):
+        a = mp.e**(H0 * t + Hd * t * t / 2)
+        H = H0 + Hd * t
+        uu = 1 + w * rr * rr
+        mu = M * mp.sqrt(uu) / (2 * a * rr)
+        N = (1 - mu) / (1 + mu)
+        return ((N - w * rr * rr) / uu)**2 - H**2 * (a * rr * (1 + mu)**2 / uu)**2
+    numerator = RA**2 * Hd * (1 + w)**2 * (1 + muA)**2 + 2 * w * (3 * muA - 2)
+    return mp.diff(lambda t: chi(t, mp.mpf(1)), 0), numerator
+
+
+for w, Hd in [('0', '0'), ('0', '-0.01'), ('0.1', '0'), ('0.1', '-0.01'), ('-0.03', '0')]:
+    dtc, num = dt_chi_and_numerator(mp.mpf(w), mp.mpf(Hd))
+    ratio = mp.nstr(dtc / num, 8) if num != 0 else 'numerator 0, d_t chi = ' + mp.nstr(dtc, 3)
+    print(f'kr_A^2={w:>5}, Hdot={Hd:>6}: d_t chi / numerator of Eq. (dRdt) = {ratio}')
