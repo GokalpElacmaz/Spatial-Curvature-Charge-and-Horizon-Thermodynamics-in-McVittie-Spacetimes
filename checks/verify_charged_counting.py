@@ -8,6 +8,8 @@ the chart (kr_A^2 -> -1) to the endpoint Y_A = 0 fixed by the cubic Eq. (merger-
   (c) Eq. (dGdmu-charged), the closed form of d(Y-HR)/dmu at fixed Q/M, against numerical differentiation,
   (d) d(Y-HR)/dM < 0 at fixed Q/M on random points of the region N > 0 with H > 0.
 Checks (a) and (b) run in detail for eight values of Q/M and on the grid Q/M = 0, 0.001, ..., 0.999.
+At Q = M the cubic has no root and the lapse is positive everywhere, so (a) and (b) are run separately there, with the
+merger part followed to mu_A -> infinity, where Y_A and M_c H tend to zero.
 Units a = M = 1, so mu = sqrt(1+k r^2)/(2 r), k r^2 = x and M_c H = H.
 Run: python3 checks/verify_charged_counting.py"""
 import random
@@ -111,6 +113,29 @@ print(f"  failures: {len(failures)}; min Omega_k off the merger part {mp.nstr(mi
       f"max r^2 G'' on the merger part {mp.nstr(max_second_all, 3)}")
 assert not failures
 mp.mp.dps = 30
+
+print("\nExtremal case Q = M: no endpoint from the cubic, merger part followed to mu_A -> infinity")
+q = mp.mpf(1)
+assert 1 - q * q == 0                      # Eq. (merger-end-charged) reduces to -mu - 2 = 0, which has no root mu > 0
+pts = [(m, curve(m, q)) for m in (mp.mpf(10)**(mp.mpf(j) / 200) for j in range(-600, 1001))]
+pts = [(m, c) for m, c in pts if c and c['Y'] > 0]
+assert all(c['x'] > -1 and (1 - m * m + (q * m)**2) > 0 for m, c in pts)                            # N = 1/(1+2mu) > 0
+i_max = max(range(len(pts)), key=lambda i: pts[i][1]['McH'])
+i_om = max(range(len(pts)), key=lambda i: pts[i][1]['Om'])
+mu_t, ct = pts[i_max]
+merger = [c for m, c in pts if m > mu_t]
+rest = [c for m, c in pts if m < mu_t]
+decreasing = all(merger[i + 1]['Om'] < merger[i]['Om'] for i in range(len(merger) - 1))
+min_rest = min(c['Om'] for c in rest)
+max_second = max(derivatives_at_double_zero(m, q)[1] for m, c in pts[i_max + 3::40])
+last = merger[-1]
+print(f"  triple zero at mu_A={mp.nstr(mu_t, 5)}, kr_A^2={mp.nstr(ct['x'], 4)} with M_cH={mp.nstr(ct['McH'], 4)}, "
+      f"Omega_k={mp.nstr(ct['Om'], 4)}")
+print(f"  Omega_k decreasing on merger part: {decreasing}; min Omega_k on the rest: {mp.nstr(min_rest, 4)}; "
+      f"max r^2 G'' on merger part: {mp.nstr(max_second, 3)}")
+print(f"  at mu_A={mp.nstr(pts[-1][0], 3)}: Y_A={mp.nstr(last['Y'], 3)}, M_cH={mp.nstr(last['McH'], 3)}, kr_A^2={mp.nstr(last['x'], 3)}")
+assert abs(i_om - i_max) <= 1 and decreasing and min_rest > 1 and max_second < 0
+assert last['Y'] < mp.mpf('1e-4') and last['McH'] < mp.mpf('1e-4')
 
 random.seed(1)
 print("\nEq. (dGdmu-charged): d(Y-HR)/dmu at fixed Q/M, closed form against numerical differentiation")
