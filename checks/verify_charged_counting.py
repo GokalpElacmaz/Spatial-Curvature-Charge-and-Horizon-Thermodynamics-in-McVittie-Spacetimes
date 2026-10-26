@@ -7,6 +7,7 @@ the chart (kr_A^2 -> -1) to the endpoint Y_A = 0 fixed by the cubic Eq. (merger-
   (b) r^2 d^2(Y-HR)/dr^2 < 0 on the merger part, so the double zero is a maximum and increasing M removes two zeros,
   (c) Eq. (dGdmu-charged), the closed form of d(Y-HR)/dmu at fixed Q/M, against numerical differentiation,
   (d) d(Y-HR)/dM < 0 at fixed Q/M on random points of the region N > 0 with H > 0.
+Checks (a) and (b) run in detail for eight values of Q/M and on the grid Q/M = 0, 0.001, ..., 0.999.
 Units a = M = 1, so mu = sqrt(1+k r^2)/(2 r), k r^2 = x and M_c H = H.
 Run: python3 checks/verify_charged_counting.py"""
 import random
@@ -80,6 +81,36 @@ for q in QM:
           f"max r^2 G'' on merger part: {mp.nstr(max_second, 3)}; max |G'|: {mp.nstr(max_first, 2)}")
     assert abs(i_om - i_max) <= 1, "Omega_k and M_c H should peak together at the triple zero"
     assert decreasing and min_rest > 1 and max_second < 0 and max_first < mp.mpf('1e-20')
+
+print("\nDense grid Q/M = 0, 0.001, ..., 0.999 (800 points per curve, 20 digits): checks (a) and (b)")
+mp.mp.dps = 20
+failures, min_rest_all, max_second_all = [], mp.inf, -mp.inf
+for i in range(1000):
+    q = mp.mpf(i) / 1000
+    c3 = 1 - q * q
+    cubic = lambda m: 3 * c3 * m**3 + 4 * c3 * m**2 - m - 2
+    hi = mp.mpf(1)
+    while cubic(hi) < 0:
+        hi *= 2
+    mu_end = mp.findroot(cubic, (mp.mpf(0), hi), solver='bisect')
+    pts = [(m, curve(m, q)) for m in (mu_end * mp.mpf(j) / 800 for j in range(1, 800))]
+    pts = [(m, c) for m, c in pts if c]
+    i_max = max(range(len(pts)), key=lambda j: pts[j][1]['McH'])
+    i_om = max(range(len(pts)), key=lambda j: pts[j][1]['Om'])
+    mu_t = pts[i_max][0]
+    merger = [c for m, c in pts if m > mu_t]
+    rest = [c for m, c in pts if m < mu_t]
+    decreasing = all(merger[j + 1]['Om'] < merger[j]['Om'] for j in range(len(merger) - 1))
+    step = max(1, (len(pts) - i_max - 3) // 12)
+    max_second = max(derivatives_at_double_zero(m, q)[1] for m, c in pts[i_max + 3::step])
+    min_rest = min(c['Om'] for c in rest)
+    min_rest_all, max_second_all = min(min_rest_all, min_rest), max(max_second_all, max_second)
+    if not (abs(i_om - i_max) <= 1 and decreasing and min_rest > 1 and max_second < 0):
+        failures.append(i)
+print(f"  failures: {len(failures)}; min Omega_k off the merger part {mp.nstr(min_rest_all, 4)}; "
+      f"max r^2 G'' on the merger part {mp.nstr(max_second_all, 3)}")
+assert not failures
+mp.mp.dps = 30
 
 random.seed(1)
 print("\nEq. (dGdmu-charged): d(Y-HR)/dmu at fixed Q/M, closed form against numerical differentiation")
