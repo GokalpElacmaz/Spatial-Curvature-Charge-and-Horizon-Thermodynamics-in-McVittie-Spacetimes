@@ -29,9 +29,9 @@ style and is imported by the figure scripts.
 | `fig2_horizon_merger.py` | Fig. 2, merger of the marginal spheres |
 | `fig3_critical_mass.py` | Fig. 3, critical mass against the merger position |
 | `fig4_cosmological_horizon.py` | Fig. 4, curvature dependence of the cosmological marginal sphere |
-| `fig5_cavity.py` | Fig. 5, cavity crossings |
-| `fig5b_crossing_roots.py` | Fig. 6, admitted wall potentials |
-| `fig6_horizon_accuracy.py` | Fig. 7, accuracy of the perturbative radius (Appendix F) |
+| `fig5_cavity.py` | Not in the paper; the cavity at $\Lambda=0$ and the coefficient $\tau_H$ (Sects. 5.3 and 5.5) |
+| `fig5b_crossing_roots.py` | Fig. 5, admitted wall potentials |
+| `fig6_horizon_accuracy.py` | Fig. 6, accuracy of the perturbative radius (Appendix F) |
 
 `fig6_horizon_accuracy.py` reads `fig6_cache.npz` when it is present and
 recomputes the numerical zeros otherwise, which takes several minutes.
